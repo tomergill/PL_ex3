@@ -114,6 +114,7 @@ Str: Str '+' Str						{	$$ = new string(*$1 + *$3); delete($1); delete($3);	}
    												return 0;
    											}
    										}
+   | '(' Str ')'						{	$$ = $2;	}
    | T_STR								{	$$ = $1;	}
 ;
 
