@@ -6,7 +6,9 @@
  */
  
 %{
-	#include <stdio.h>
+	#include <iostream>
+	using namespace std;
+	
 	#include <math.h>
 	int yylex();
 	void yyerror(const char*);
@@ -27,7 +29,7 @@
 lines: /*epsilon*/ |
      line lines;
 
-line: Expr '\n'	{	printf("Expr=%d\n", $1);	}
+line: Expr '\n'	{	cout << "Expr=" << $1 << endl;	}
 ;
 
 Expr: Expr '+' Expr			{	$$ = $1 + $3;	}
@@ -37,7 +39,7 @@ Expr: Expr '+' Expr			{	$$ = $1 + $3;	}
 									$$ = $1 / $3;
 								else 
 								{
-									printf("Error – Zero Division\n");
+									cout << "Error – Zero Division" << endl;
 									return 0;
 								}	
 							}
@@ -57,7 +59,7 @@ Expr: Expr '+' Expr			{	$$ = $1 + $3;	}
 
 void yyerror(const char *err)
 {
-	printf("Error: %s\n", err);
+	cout << "Error: " << err << endl;
 }
 
 int main() 

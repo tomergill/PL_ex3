@@ -6,8 +6,10 @@
  */
  
 %{
-	#include <stdlib.h>
+	#include <iostream>	
 	#include "ex3.tab.h"
+	
+	using namespace std;
 %}
  
 NUMBER			0|[1-9][0-9]*

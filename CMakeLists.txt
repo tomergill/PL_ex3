@@ -3,5 +3,5 @@ project(ex3)
 
 set(CMAKE_C_STANDARD 99)
 
-set(SOURCE_FILES main.c)
+set(SOURCE_FILES a.cpp)
 add_executable(ex3 ${SOURCE_FILES})
