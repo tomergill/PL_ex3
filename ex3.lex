@@ -10,7 +10,7 @@
 	#include "ex3.tab.h"
 	
 	using namespace std;
-	//<MAP_STATE>{VARNAME}	{	yylval.str = new string(yytext); return MAP_STRAT;	}
+	int counter = 0;	//counts how many open { brackets there are
 %}
 
 %s MAP_STATE
@@ -34,34 +34,40 @@ COLON			":"
 
 %%
 
-<MAP_STATE>{END_BRACKET}	{	BEGIN(INITIAL); return MAP_END;	}
+<MAP_STATE>{END_BRACKET}	{	
+								if (--counter == 0)
+								{
+									BEGIN(INITIAL);
+								}
+								return '}';	
+							}
 <MAP_STATE>{COMMA}			{	return COMMA;	}
 <MAP_STATE>{COLON}			{	return COLON;	}
 <MAP_STATE>{VAR}			{	yylval.str = new string(yytext); return Var;	}
 
 
-{START_BRACKET}		{	BEGIN(MAP_STATE); return MAP_START;	}
+{START_BRACKET}				{	counter++; BEGIN(MAP_STATE); return '{';	}
 
-{VAR}		{	return VAR_ASSIGN;	}
+{VAR}						{	return VAR_ASSIGN;	}
 
-{VARNAME}	{	yylval.str = new string(yytext); return Var;	}
+{VARNAME}					{	yylval.str = new string(yytext); return Var;	}
 
-{STRING}	{	
-				string temp = string(yytext);
-				yylval.str = new string(temp.substr(1, temp.length() - 2)); /*return "str" without "-s */ 
-				return T_STR; 
-			}
+{STRING}					{	
+								string temp = string(yytext);
+								yylval.str = new string(temp.substr(1, temp.length() - 2)); /*return "str" without "-s */ 
+								return T_STR; 
+							}
 
-{NUMBER}	{	yylval.int_val = atoi(yytext); return T_INT;	}
+{NUMBER}					{	yylval.int_val = atoi(yytext); return T_INT;	}
 
-{SEARCH}	{	return SEARCH;	}
+{SEARCH}					{	return SEARCH;	}
 
-{OR}		{	return OR;	}
-{AND}		{	return AND;	}
-{EQ}		{	return EQ;	}
-{NEQ}		{	return NEQ;	}
-" "|\t		{	/*nothing*/	}
-.|\n		{	return *yytext;	}
+{OR}						{	return OR;	}
+{AND}						{	return AND;	}
+{EQ}						{	return EQ;	}
+{NEQ}						{	return NEQ;	}
+" "|\t						{	/*nothing*/	}
+.|\n						{	return *yytext;	}
 
 %%
 

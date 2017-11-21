@@ -39,13 +39,12 @@
 %right		'^'		//strings & nums
 %nonassoc	'<' '>' //strings
 %nonassoc	'(' ')'	//strings & nums
+%nonassoc	'{' '}'	//maps
 
 %token	<int_val>	T_INT
 %token	<str>		T_STR
 %token				VAR_ASSIGN
 %token	<str>		Var
-%token				MAP_START
-%token				MAP_END
 %token				COLON
 %token				COMMA
 
@@ -166,8 +165,8 @@ Str: Str '+' Str						{	$$ = new string(*$1 + *$3); delete($1); delete($3);	}
    | T_STR								{	$$ = $1;	}
 ;
 
-MAP: MAP_START MAP_PAIRS MAP_END 		// map with one or more pairs of Key (string) and Value (number)
-   | MAP_START /*epsilon*/ MAP_END 		// {} - empty map
+MAP: '{' MAP_PAIRS '}' 			// map with one or more pairs of Key (string) and Value (number)
+   | '{' /*epsilon*/ '}' 		// {} - empty map
 ;
 
 MAP_PAIRS: MAP_PAIR 
