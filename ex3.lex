@@ -22,6 +22,7 @@ NEQ				"!="
 {AND}		{	return AND;	}
 {EQ}		{	return EQ;	}
 {NEQ}		{	return NEQ;	}
+" "			{	/*nothing*/	}
 .|\n		{	return *yytext;	}
 
 %%
