@@ -19,8 +19,8 @@ EQ				"=="
 NEQ				"!="
 STRING			\"[^\"]*\"
 SEARCH			"=~"
-LETTERS_		a-zA-z_
-VARNAME			[{LETTERS}][{LETTERS}0-9]*
+LETTERSAND_		[a-zA-Z_]
+VARNAME			{LETTERSAND_}({LETTERSAND_}|[0-9])*
 WS				" "\t\n
 %%
 
@@ -30,7 +30,7 @@ WS				" "\t\n
 
 {STRING}	{	
 				string temp = string(yytext);
-				yylval.str = new string(temp.substr(1, temp.length() - 2)); /*return "str" without "*/ 
+				yylval.str = new string(temp.substr(1, temp.length() - 2)); /*return "str" without "-s */ 
 				return T_STR; 
 			}
 
@@ -42,7 +42,7 @@ WS				" "\t\n
 {AND}		{	return AND;	}
 {EQ}		{	return EQ;	}
 {NEQ}		{	return NEQ;	}
-" "			{	/*nothing*/	}
+" "|\t		{	/*nothing*/	}
 .|\n		{	return *yytext;	}
 
 %%

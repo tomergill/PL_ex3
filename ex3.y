@@ -50,8 +50,8 @@
 lines: /*epsilon*/ |
      line lines;
 
-line: Expr '\n'							{	cout << "Expr=" << $1 << endl;	}
-	| Str '\n'							{	cout << "Str=" << *$1 << endl; delete($1);	}
+line: Expr '\n'							{	cout << "Expr = " << $1 << endl;	}
+	| Str '\n'							{	cout << "Str = " << *$1 << endl; delete($1);	}
 	| VAR_ASSIGN Var '=' Expr '\n'		{	variables[*$2] = $4;	delete($2);}	
 ;
 
@@ -83,7 +83,7 @@ Expr: Expr '+' Expr						{	$$ = $1 + $3;	}
 												$$ = variables[*$1];
 											else 
 											{
-												cout << "The variable " << $1 << " doesn't exist!" << endl;
+												cout << "The variable " << *$1 << " doesn't exist!" << endl;
 												delete($1);
 												return 0;
 											}	
