@@ -5,3 +5,8 @@
 #include <iostream>
 
 using namespace std;
+
+int main() {
+    string *a = new string("aabb");
+    delete(a);
+}

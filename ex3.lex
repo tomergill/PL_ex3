@@ -17,9 +17,16 @@ OR				"||"
 AND				"&&"
 EQ				"=="
 NEQ				"!="
+STRING			\"[^\"]*\"
 %%
 
-{NUMBER}	{	yylval = atoi(yytext); return T_INT;	}
+{STRING}	{	
+				string temp = string(yytext);
+				yylval.str = new string(temp.substr(1, temp.length() - 2)); /*return "str" without "*/ 
+				return T_STR; 
+			}
+
+{NUMBER}	{	yylval.int_val = atoi(yytext); return T_INT;	}
 {OR}		{	return OR;	}
 {AND}		{	return AND;	}
 {EQ}		{	return EQ;	}
