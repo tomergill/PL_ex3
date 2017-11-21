@@ -18,6 +18,7 @@ AND				"&&"
 EQ				"=="
 NEQ				"!="
 STRING			\"[^\"]*\"
+SEARCH			"=~"
 %%
 
 {STRING}	{	
@@ -27,6 +28,9 @@ STRING			\"[^\"]*\"
 			}
 
 {NUMBER}	{	yylval.int_val = atoi(yytext); return T_INT;	}
+
+{SEARCH}	{	return SEARCH;	}
+
 {OR}		{	return OR;	}
 {AND}		{	return AND;	}
 {EQ}		{	return EQ;	}

@@ -7,6 +7,6 @@
 using namespace std;
 
 int main() {
-    string *a = new string("aabb");
-    delete(a);
+    string a = "bbb";
+    cout << string(a[2]) << endl;
 }
