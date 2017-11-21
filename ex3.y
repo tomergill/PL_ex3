@@ -17,7 +17,7 @@
 	void 	yyerror(const char*);
 	int 	yylex();
 	
-	map<string, int> variables;
+	map<string, int> variables, the_map; //variable map, and the map to the Map part
 %}
 
 %union 
@@ -42,6 +42,10 @@
 %token	<str>		T_STR
 %token				VAR_ASSIGN
 %token	<str>		Var
+%token				MAP_START
+%token				MAP_END
+%token				COLON
+%token				COMMA
 
 %type	<int_val>	Expr
 %type	<str>		Str
@@ -52,7 +56,15 @@ lines: /*epsilon*/ |
 
 line: Expr '\n'							{	cout << "Expr = " << $1 << endl;	}
 	| Str '\n'							{	cout << "Str = " << *$1 << endl; delete($1);	}
-	| VAR_ASSIGN Var '=' Expr '\n'		{	variables[*$2] = $4;	delete($2);}	
+	| VAR_ASSIGN Var '=' Expr '\n'		{	variables[*$2] = $4;	delete($2);}
+	| MAP '\n'							{
+											map<string, int>::iterator it;
+											for (it = the_map.begin(); it != the_map.end(); ++it)
+											{
+												cout << it->first << " : " << it->second << endl;
+											}
+											the_map.clear(); //finished with map, emptying it
+										}
 ;
 
 Expr: Expr '+' Expr						{	$$ = $1 + $3;	}
@@ -133,6 +145,29 @@ Str: Str '+' Str						{	$$ = new string(*$1 + *$3); delete($1); delete($3);	}
    										}
    | '(' Str ')'						{	$$ = $2;	}
    | T_STR								{	$$ = $1;	}
+;
+
+MAP: MAP_START MAP_PAIRS MAP_END 		// map with one or more pairs of Key (string) and Value (number)
+   | MAP_START /*epsilon*/ MAP_END 		// {} - empty map
+;
+
+MAP_PAIRS: MAP_PAIR 
+		 | MAP_PAIR COMMA MAP_PAIRS
+;
+
+MAP_PAIR: Var COLON Expr			{
+											if (the_map.find(*$1) == the_map.end()) // key doesn't exist already
+											{
+												the_map[*$1] = $3;
+												delete($1);
+											}
+											else // key exists in map
+											{
+												cout << "The key " << *$1 << " already exist!" << endl;
+												delete($1);
+												return 0;
+											}
+										}
 ;
 
 %%

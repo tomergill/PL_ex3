@@ -10,7 +10,10 @@
 	#include "ex3.tab.h"
 	
 	using namespace std;
+	//<MAP_STATE>{VARNAME}	{	yylval.str = new string(yytext); return MAP_STRAT;	}
 %}
+
+%s MAP_STATE
  
 NUMBER			0|[1-9][0-9]*
 OR				"||"
@@ -22,9 +25,24 @@ SEARCH			"=~"
 LETTERSAND_		[a-zA-Z_]
 VARNAME			{LETTERSAND_}({LETTERSAND_}|[0-9])*
 WS				" "\t\n
+VAR				"var"
+START_BRACKET	"{"
+END_BRACKET		"}"
+COMMA			","
+COLON			":"
+
+
 %%
 
-"var"		{	return VAR_ASSIGN;	}
+<MAP_STATE>{END_BRACKET}	{	BEGIN(INITIAL); return MAP_END;	}
+<MAP_STATE>{COMMA}			{	return COMMA;	}
+<MAP_STATE>{COLON}			{	return COLON;	}
+<MAP_STATE>{VAR}			{	yylval.str = new string(yytext); return Var;	}
+
+
+{START_BRACKET}		{	BEGIN(MAP_STATE); return MAP_START;	}
+
+{VAR}		{	return VAR_ASSIGN;	}
 
 {VARNAME}	{	yylval.str = new string(yytext); return Var;	}
 

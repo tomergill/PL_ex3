@@ -9,7 +9,6 @@ using namespace std;
 
 int main() {
     map<string, int> a;
-    a["aaa"] = 3;
-    a["c"] = 12;
-    cout << a["xyz"] << endl;
+    map<string, int>::iterator it = a.begin();
+    cout << (it == a.end()) << endl;
 }
