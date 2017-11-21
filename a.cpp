@@ -3,10 +3,13 @@
 //
 
 #include <iostream>
+#include <map>
 
 using namespace std;
 
 int main() {
-    string a = "bbb";
-    cout << string(a[2]) << endl;
+    map<string, int> a;
+    a["aaa"] = 3;
+    a["c"] = 12;
+    cout << a["xyz"] << endl;
 }

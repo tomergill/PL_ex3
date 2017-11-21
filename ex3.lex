@@ -19,7 +19,14 @@ EQ				"=="
 NEQ				"!="
 STRING			\"[^\"]*\"
 SEARCH			"=~"
+LETTERS_		a-zA-z_
+VARNAME			[{LETTERS}][{LETTERS}0-9]*
+WS				" "\t\n
 %%
+
+"var"		{	return VAR_ASSIGN;	}
+
+{VARNAME}	{	yylval.str = new string(yytext); return Var;	}
 
 {STRING}	{	
 				string temp = string(yytext);

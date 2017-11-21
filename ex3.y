@@ -11,10 +11,13 @@
 	#include <algorithm>
 	#include <sstream>
 	#include <stdexcept>
+	#include <map>
 	using namespace std;
 	
 	void 	yyerror(const char*);
 	int 	yylex();
+	
+	map<string, int> variables;
 %}
 
 %union 
@@ -37,6 +40,8 @@
 
 %token	<int_val>	T_INT
 %token	<str>		T_STR
+%token				VAR_ASSIGN
+%token	<str>		Var
 
 %type	<int_val>	Expr
 %type	<str>		Str
@@ -47,6 +52,7 @@ lines: /*epsilon*/ |
 
 line: Expr '\n'							{	cout << "Expr=" << $1 << endl;	}
 	| Str '\n'							{	cout << "Str=" << *$1 << endl; delete($1);	}
+	| VAR_ASSIGN Var '=' Expr '\n'		{	variables[*$2] = $4;	delete($2);}	
 ;
 
 Expr: Expr '+' Expr						{	$$ = $1 + $3;	}
@@ -72,6 +78,17 @@ Expr: Expr '+' Expr						{	$$ = $1 + $3;	}
 	| Expr NEQ Expr						{	$$ = ($1 != $3);	}
 	| '(' Expr ')'						{	$$ = $2;	}
 	| Str SEARCH Str					{	$$ = $1->find(*$3); delete($1); delete($3);	}
+	| Var								{	
+											if (variables.find(*$1) != variables.end())
+												$$ = variables[*$1];
+											else 
+											{
+												cout << "The variable " << $1 << " doesn't exist!" << endl;
+												delete($1);
+												return 0;
+											}	
+											delete($1);
+										}
 	| T_INT								{	$$ = (int) $1;	}
 ;
 
