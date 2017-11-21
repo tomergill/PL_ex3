@@ -12,12 +12,14 @@
 	#include <sstream>
 	#include <stdexcept>
 	#include <map>
+	#include <vector>
 	using namespace std;
 	
 	void 	yyerror(const char*);
 	int 	yylex();
 	
-	map<string, int> variables, the_map; //variable map, and the map to the Map part
+	map<string, int> variables, the_map;	// variable map, and the map to the Map part
+	vector<string>	insertionOrder;			// keeps the insertation order of the_map
 %}
 
 %union 
@@ -58,12 +60,13 @@ line: Expr '\n'							{	cout << "Expr = " << $1 << endl;	}
 	| Str '\n'							{	cout << "Str = " << *$1 << endl; delete($1);	}
 	| VAR_ASSIGN Var '=' Expr '\n'		{	variables[*$2] = $4;	delete($2);}
 	| MAP '\n'							{
-											map<string, int>::iterator it;
-											for (it = the_map.begin(); it != the_map.end(); ++it)
+											int i;
+											for (i = 0; i < insertionOrder.size(); ++i)
 											{
-												cout << it->first << " : " << it->second << endl;
+												cout << insertionOrder[i] << " : " << the_map[insertionOrder[i]] << endl;
 											}
-											the_map.clear(); //finished with map, emptying it
+											the_map.clear(); 		// finished with map, emptying it
+											insertionOrder.clear();	// likewise for insertion list
 										}
 ;
 
@@ -90,6 +93,22 @@ Expr: Expr '+' Expr						{	$$ = $1 + $3;	}
 	| Expr NEQ Expr						{	$$ = ($1 != $3);	}
 	| '(' Expr ')'						{	$$ = $2;	}
 	| Str SEARCH Str					{	$$ = $1->find(*$3); delete($1); delete($3);	}
+	| MAP '[' Str ']'					{
+											vector<string>::iterator it;
+											if ((it = find(insertionOrder.begin(), insertionOrder.end(), *$3)) != insertionOrder.end()) // found key
+											{
+												$$ = the_map[*it];
+												delete($3);
+												the_map.clear();
+												insertionOrder.clear();
+											}
+											else // key doesn't exist
+											{
+												cout << "The key " << *$3 << " doesn't exist!" << endl;
+												delete($3);
+												return 0;
+											}
+										}
 	| Var								{	
 											if (variables.find(*$1) != variables.end())
 												$$ = variables[*$1];
@@ -159,6 +178,7 @@ MAP_PAIR: Var COLON Expr			{
 											if (the_map.find(*$1) == the_map.end()) // key doesn't exist already
 											{
 												the_map[*$1] = $3;
+												insertionOrder.push_back(*$1);
 												delete($1);
 											}
 											else // key exists in map
@@ -167,7 +187,7 @@ MAP_PAIR: Var COLON Expr			{
 												delete($1);
 												return 0;
 											}
-										}
+									}
 ;
 
 %%
