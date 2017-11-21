@@ -14,11 +14,12 @@
 
 %left		OR
 %left		AND
-%nonassoc	EQUALS NEQUALS
+%nonassoc	EQ NEQ
 %left		'+' '-'
 %left		'*' '/'
 %nonassoc	UNARY
-%left		'^'
+%right		'^'
+%nonassoc	'(' ')'
 
 %token	T_INT
 
@@ -32,12 +33,22 @@ line: Expr '\n'	{	printf("Expr=%d\n", $1);	}
 Expr: Expr '+' Expr			{	$$ = $1 + $3;	}
 	| Expr '-' Expr			{	$$ = $1 - $3;	}		
 	| Expr '*' Expr			{	$$ = $1 * $3;	}
-	| Expr '/' Expr			{	$3 != 0 ? $$ = $1 / $3 : printf("Error – Zero Division\n");	}
+	| Expr '/' Expr			{	if ($3 != 0)
+									$$ = $1 / $3;
+								else 
+								{
+									printf("Error – Zero Division\n");
+									return 0;
+								}	
+							}
 	| Expr '^' Expr			{	$$ = (int) pow($1, $3);	}
 	| '+' Expr	%prec UNARY	{	$$ = $2;	}
 	| '-' Expr	%prec UNARY	{	$$ = -1 * $2;	}
 	| Expr OR Expr			{	$$ = $1  || $3;	}
 	| Expr AND Expr			{	$$ = $1  && $3;	}
+	| Expr EQ Expr			{	$$ = ($1 == $3);	}
+	| Expr NEQ Expr			{	$$ = ($1 != $3);	}
+	| '(' Expr ')'			{	$$ = $2;	}
 	| T_INT					{	$$ = $1;	}
 ;
 

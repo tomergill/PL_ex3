@@ -11,10 +11,18 @@
 %}
  
 NUMBER			0|[1-9][0-9]*
+OR				"||"
+AND				"&&"
+EQ				"=="
+NEQ				"!="
 %%
 
-{NUMBER}	{yylval = atoi(yytext); return T_INT;}
-.|\n		{return *yytext; }
+{NUMBER}	{	yylval = atoi(yytext); return T_INT;	}
+{OR}		{	return OR;	}
+{AND}		{	return AND;	}
+{EQ}		{	return EQ;	}
+{NEQ}		{	return NEQ;	}
+.|\n		{	return *yytext;	}
 
 %%
 
